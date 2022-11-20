@@ -12,3 +12,5 @@ client/*.translation
 # Mono-specific ignores
 client/.mono/
 client/data_*/
+
+client/HTML5/

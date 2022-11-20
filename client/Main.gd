@@ -5,6 +5,7 @@ const NetworkClient = preload("res://websockets_client.gd")
 const Packet = preload("res://packet.gd")
 
 onready var _network_client = NetworkClient.new()
+onready var _chatbox = get_node("Chatbox")
 var state: FuncRef
 
 
@@ -15,12 +16,23 @@ func _ready():
 	_network_client.connect("data", self, "_handle_network_data")
 	add_child(_network_client)
 	_network_client.connect_to_server("127.0.0.1", 8081)
+	
+	_chatbox.connect("message_sent", self, "send_chat")
 
 	state = funcref(self, "PLAY")
 
 
 func PLAY(p):
-	pass
+	match p.action:
+		"Chat":
+			var message: String = p.payloads[0]
+			_chatbox.add_message(message)
+	
+	
+func send_chat(text: String):
+	var p: Packet = Packet.new("Chat", [text])
+	_network_client.send_packet(p)
+	_chatbox.add_message(text)
 
 
 func _handle_client_connected():

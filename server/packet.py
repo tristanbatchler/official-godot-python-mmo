@@ -3,7 +3,7 @@ import enum
 
 
 class Action(enum.Enum):
-    pass
+    Chat = enum.auto()
 
 
 class Packet:
@@ -26,7 +26,6 @@ class ChatPacket(Packet):
     def __init__(self, message: str):
         super().__init__(Action.Chat, message)
 
-
 def from_json(json_str: str) -> Packet:
     obj_dict = json.loads(json_str)
 
@@ -47,7 +46,7 @@ def from_json(json_str: str) -> Packet:
         return constructor(*payloads)
     except KeyError as e:
         print(
-            f"KeyError: {class_name} is not a valid packet name. Stacktrace: {e}")
+            f"{class_name} is not a valid packet name. Stacktrace: {e}")
     except TypeError:
         print(
-            f"TypeError: {class_name} can't handle arguments {tuple(payloads)}.")
+            f"{class_name} can't handle arguments {tuple(payloads)}.")
