@@ -1,0 +1,14 @@
+server/__pycache__
+server/venv
+
+# Godot-specific ignores
+client/.import/
+client/export.cfg
+client/export_presets.cfg
+
+# Imported translations (automatically generated from CSV files)
+client/*.translation
+
+# Mono-specific ignores
+client/.mono/
+client/data_*/

@@ -1,0 +1,2 @@
+# Godot Python MMO
+This project is part of a blog and YouTube tutorial series on creating a multipler online game using Python and Godot. For more information, see https://tbat.me/2022/11/20/godot-python-mmo-part-1.html
