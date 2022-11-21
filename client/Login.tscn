@@ -1,0 +1,79 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Login.gd" type="Script" id=1]
+
+[node name="Login" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+anchor_left = 0.2
+anchor_top = 0.4
+anchor_right = 0.8
+anchor_bottom = 0.6
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/VBoxContainer"]
+margin_right = 614.0
+margin_bottom = 52.0
+columns = 2
+
+[node name="Label_Username" type="Label" parent="CanvasLayer/VBoxContainer/GridContainer"]
+margin_top = 5.0
+margin_right = 74.0
+margin_bottom = 19.0
+text = "Username: "
+
+[node name="LineEdit_Username" type="LineEdit" parent="CanvasLayer/VBoxContainer/GridContainer"]
+margin_left = 78.0
+margin_right = 614.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="Label_Password" type="Label" parent="CanvasLayer/VBoxContainer/GridContainer"]
+margin_top = 33.0
+margin_right = 74.0
+margin_bottom = 47.0
+text = "Password: "
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="LineEdit_Password" type="LineEdit" parent="CanvasLayer/VBoxContainer/GridContainer"]
+margin_left = 78.0
+margin_top = 28.0
+margin_right = 614.0
+margin_bottom = 52.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/VBoxContainer"]
+margin_top = 56.0
+margin_right = 614.0
+margin_bottom = 76.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer/CenterContainer"]
+margin_left = 250.0
+margin_right = 364.0
+margin_bottom = 20.0
+
+[node name="Button_Login" type="Button" parent="CanvasLayer/VBoxContainer/CenterContainer/HBoxContainer"]
+margin_right = 46.0
+margin_bottom = 20.0
+text = "Login"
+
+[node name="Button_Register" type="Button" parent="CanvasLayer/VBoxContainer/CenterContainer/HBoxContainer"]
+margin_left = 50.0
+margin_right = 114.0
+margin_bottom = 20.0
+text = "Register"

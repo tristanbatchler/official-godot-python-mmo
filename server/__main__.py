@@ -1,3 +1,4 @@
+import manage
 import sys
 import protocol
 from twisted.python import log
