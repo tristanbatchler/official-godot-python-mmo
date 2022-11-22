@@ -8,6 +8,8 @@ class Action(enum.Enum):
     Login = enum.auto()
     Register = enum.auto()
     Chat = enum.auto()
+    ModelData = enum.auto()
+    Target = enum.auto()
 
 
 class Packet:
@@ -44,6 +46,15 @@ class RegisterPacket(Packet):
 class ChatPacket(Packet):
     def __init__(self, sender: str, message: str):
         super().__init__(Action.Chat, sender, message)
+
+class ModelDataPacket(Packet):
+    def __init__(self, model_data: dict):
+        super().__init__(Action.ModelData, model_data)
+
+class TargetPacket(Packet):
+    def __init__(self, t_x: float, t_y: float):
+        super().__init__(Action.Target, t_x, t_y)
+
 
 def from_json(json_str: str) -> Packet:
     obj_dict = json.loads(json_str)

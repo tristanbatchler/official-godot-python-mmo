@@ -12,9 +12,7 @@ class GameFactory(WebSocketServerFactory):
         super().__init__(f"ws://{hostname}:{port}")
 
         self.players: set[protocol.GameServerProtocol] = set()
-
-        tickloop = task.LoopingCall(self.tick)
-        tickloop.start(1 / 20)  # 20 times per second
+        self.tickrate: int = 5
 
     def tick(self):
         for p in self.players:
@@ -23,6 +21,7 @@ class GameFactory(WebSocketServerFactory):
     # Override
     def buildProtocol(self, addr):
         p = super().buildProtocol(addr)
+        task.LoopingCall(p.tick).start(1 / self.tickrate)
         self.players.add(p)
         return p
 
