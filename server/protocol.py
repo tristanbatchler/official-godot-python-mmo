@@ -11,8 +11,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         self._packet_queue: queue.Queue[tuple['GameServerProtocol', packet.Packet]] = queue.Queue()
         self._state: callable = self.LOGIN
         self._actor: models.Actor = None
-        self._last_delta_move_checked = None
-        self._delta_move: float = None
+        self._last_delta_time_checked = None
 
     def LOGIN(self, sender: 'GameServerProtocol', p: packet.Packet):
         if p.action == packet.Action.Login:
@@ -20,7 +19,6 @@ class GameServerProtocol(WebSocketServerProtocol):
             if models.User.objects.filter(username=username, password=password).exists():
                 user = models.User.objects.get(username=username)
                 self._actor = models.Actor.objects.get(user=user)
-                self._player_target = [self._actor.instanced_entity.x, self._actor.instanced_entity.y]
                 
                 self.send_client(packet.OkPacket())
                 self.send_client(packet.ModelDataPacket(models.create_dict(self._actor)))
@@ -56,32 +54,35 @@ class GameServerProtocol(WebSocketServerProtocol):
 
         elif p.action == packet.Action.Target:
             target = p.payloads
+
             pos = [self._actor.instanced_entity.x, self._actor.instanced_entity.y]
-        
-            now = time.time()
-            if self._last_delta_move_checked:
-                self._delta_move = now - self._last_delta_move_checked
-            self._last_delta_move_checked = now
 
-            if self._delta_move:
-                print(self._delta_move)
-                dist = 70 * self._delta_move
-            else:
-                dist = 70 / self.factory.tickrate
+            # Calculate delta time
+            now: float = time.time()
+            delta_time = 1 / self.factory.tickrate
+            if self._last_delta_time_checked:
+                delta_time = now - self._last_delta_time_checked
+            self._last_delta_time_checked = now
 
-            if self._distance_squared_to(pos, target) > dist**2:
-                # Update our model if we're not already close enough to the target
-                d_x, d_y = self._direction_to(pos, target)
-                self._actor.instanced_entity.x += d_x * dist
-                self._actor.instanced_entity.y += d_y * dist
-                
-                # Add this packet back to the queue to repeat this process until we're close enough
-                self.onPacket(self, p)
+            # Use delta time to calculate distance to travel this time
+            dist: float = 70 * delta_time
+            
+            # Early exit if we are already within an acceptable distance of the target
+            if self._distance_squared_to(pos, target) < dist**2:
+                self._last_delta_time_checked = None
+                return
+            
+            # Update our model if we're not already close enough to the target
+            d_x, d_y = self._direction_to(pos, target)
+            self._actor.instanced_entity.x += d_x * dist
+            self._actor.instanced_entity.y += d_y * dist
+            
+            # Add this packet back to the queue to repeat this process until we're close enough
+            self.onPacket(self, p)
 
-                # Broadcast our new model to everyone
-                self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
-            else:
-                self._last_delta_move_checked = None
+            # Broadcast our new model to everyone
+            self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
+
 
 
     def tick(self):
@@ -89,7 +90,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         if not self._packet_queue.empty():
             s, p = self._packet_queue.get()
             self._state(s, p)
-
+    
     @staticmethod
     def _distance_squared_to(current: list[float], target: list[float]) -> float:
         if target == current:

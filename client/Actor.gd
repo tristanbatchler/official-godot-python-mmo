@@ -44,7 +44,7 @@ func _physics_process(delta):
 					velocity = Vector2.ZERO
 					
 			line.add_point(Vector2(points_x, 500 - (body.position.distance_to(server_position))))
-			if points_x + 0.9 < 1020:
+			if points_x + 0.9 < 1024:
 				points_x += 0.9
 			else:
 				points_x = 0
