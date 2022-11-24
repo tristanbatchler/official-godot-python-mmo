@@ -12,7 +12,7 @@ class GameFactory(WebSocketServerFactory):
         super().__init__(f"ws://{hostname}:{port}")
 
         self.players: set[protocol.GameServerProtocol] = set()
-        self.tickrate: int = 5
+        self.tickrate: int = 20
 
         tickloop = task.LoopingCall(self.tick)
         tickloop.start(1 / self.tickrate)
