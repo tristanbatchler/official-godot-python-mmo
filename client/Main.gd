@@ -78,11 +78,12 @@ func _update_models(model_data: Dictionary):
 	f.call_func(model_id, model_data)
 
 func _update_actor(model_id: int, model_data: Dictionary):
+	# If this is an existing actor, just update them
 	if model_id in _actors:
 		_actors[model_id].update(model_data)
 
+	# If this actor doesn't exist in the game yet, create them
 	else:
-		
 		var new_actor
 		
 		if not _player_actor: 

@@ -15,7 +15,7 @@ class GameFactory(WebSocketServerFactory):
         self.tickrate: int = 5
 
         tickloop = task.LoopingCall(self.tick)
-        tickloop.start(1 / 20)  # 20 times per second
+        tickloop.start(1 / self.tickrate)
 
     def tick(self):
         for p in self.players:

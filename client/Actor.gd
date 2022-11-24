@@ -12,7 +12,7 @@ var velocity: Vector2 = Vector2.ZERO
 var is_player: bool = false
 var _player_target: Vector2
 
-var points_x: float = 0
+var speed: float = 70.0
 
 func update(new_model: Dictionary):
 	.update(new_model)
@@ -28,20 +28,19 @@ func update(new_model: Dictionary):
 		body.position = server_position
 
 func _physics_process(delta):
-	if body:
-		if not is_player:
-			if server_position:
-				velocity = body.position.direction_to(server_position) * 70
-				
-				if body.position.distance_squared_to(server_position) <= 25:
-					velocity = Vector2.ZERO
-
-			
-		else:
-			velocity = body.position.direction_to(_player_target) * 70
-			
-			if body.position.distance_squared_to(_player_target) <= 25:
-					velocity = Vector2.ZERO
-			
-		body.position += velocity * delta
+	if not body:
+		return
+		
+	var target: Vector2
+	if is_player:
+		target = _player_target
+	elif server_position:
+		target = server_position
+		
+	velocity = body.position.direction_to(target) * self.speed
+	
+	if body.position.distance_to(server_position) <= self.speed * delta:
+		velocity = Vector2.ZERO
+		
+	body.position += velocity * delta
 
