@@ -1,5 +1,6 @@
-import manage
+import manage   # This must be at the top
 import sys
+import time
 import protocol
 from twisted.python import log
 from twisted.internet import reactor, task
@@ -12,7 +13,9 @@ class GameFactory(WebSocketServerFactory):
         super().__init__(f"ws://{hostname}:{port}")
 
         self.players: set[protocol.GameServerProtocol] = set()
-        self.tickrate: int = 20
+        self.tickrate: int = 5
+
+        task.LoopingCall(self.tick).start(1 / self.tickrate)
 
     def tick(self):
         for p in self.players:
@@ -21,7 +24,6 @@ class GameFactory(WebSocketServerFactory):
     # Override
     def buildProtocol(self, addr):
         p = super().buildProtocol(addr)
-        task.LoopingCall(p.tick).start(1 / self.tickrate)
         self.players.add(p)
         return p
 

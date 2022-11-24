@@ -25,8 +25,3 @@ texture = ExtResource( 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KinematicBody2D"]
 shape = SubResource( 1 )
-
-[node name="CanvasLayer" type="CanvasLayer" parent="KinematicBody2D"]
-
-[node name="Line2D" type="Line2D" parent="KinematicBody2D/CanvasLayer"]
-width = 1.0

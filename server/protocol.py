@@ -1,4 +1,5 @@
 import math
+import utils
 import queue
 import time
 from server import packet
@@ -11,6 +12,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         self._packet_queue: queue.Queue[tuple['GameServerProtocol', packet.Packet]] = queue.Queue()
         self._state: callable = self.LOGIN
         self._actor: models.Actor = None
+        self._player_target: list[float] = None
         self._last_delta_time_checked = None
 
     def LOGIN(self, sender: 'GameServerProtocol', p: packet.Packet):
@@ -53,61 +55,45 @@ class GameServerProtocol(WebSocketServerProtocol):
             self.send_client(p)
 
         elif p.action == packet.Action.Target:
-            target = p.payloads
+            self._player_target = p.payloads
 
-            pos = [self._actor.instanced_entity.x, self._actor.instanced_entity.y]
+    def _update_position(self) -> bool:
+        "Attempt to update the actor's position and return true only if the position was changed"
+        if not self._player_target:
+            return False
+        pos = [self._actor.instanced_entity.x, self._actor.instanced_entity.y]
 
-            # Calculate delta time
-            now: float = time.time()
-            delta_time = 1 / self.factory.tickrate
-            if self._last_delta_time_checked:
-                delta_time = now - self._last_delta_time_checked
-            self._last_delta_time_checked = now
+        now: float = time.time()
+        delta_time: float = 1 / self.factory.tickrate
+        if self._last_delta_time_checked:
+            delta_time = now - self._last_delta_time_checked
+        self._last_delta_time_checked = now
 
-            # Use delta time to calculate distance to travel this time
-            dist: float = 70 * delta_time
-            
-            # Early exit if we are already within an acceptable distance of the target
-            if self._distance_squared_to(pos, target) < dist**2:
-                self._last_delta_time_checked = None
-                return
-            
-            # Update our model if we're not already close enough to the target
-            d_x, d_y = self._direction_to(pos, target)
-            self._actor.instanced_entity.x += d_x * dist
-            self._actor.instanced_entity.y += d_y * dist
-            
-            # Add this packet back to the queue to repeat this process until we're close enough
-            self.onPacket(self, p)
+        # Use delta time to calculate distance to travel this time
+        dist: float = 70 * delta_time
+        
+        # Early exit if we are already within an acceptable distance of the target
+        if math.dist(pos, self._player_target) < dist:
+            return False
+        
+        # Update our model if we're not already close enough to the target
+        d_x, d_y = utils.direction_to(pos, self._player_target)
+        self._actor.instanced_entity.x += d_x * dist
+        self._actor.instanced_entity.y += d_y * dist
 
-            # Broadcast our new model to everyone
-            self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
-
-
+        return True
 
     def tick(self):
         # Process the next packet in the queue
         if not self._packet_queue.empty():
             s, p = self._packet_queue.get()
             self._state(s, p)
-    
-    @staticmethod
-    def _distance_squared_to(current: list[float], target: list[float]) -> float:
-        if target == current:
-            return 0
-        
-        return (target[0] - current[0])**2 + (target[1] - current[1])**2
 
-    @staticmethod
-    def _direction_to(current: list[float], target: list[float]) -> list[float]:
-        if target == current:
-            return [0, 0]
-        
-        n_x = target[0] - current[0]
-        n_y = target[1] - current[1]
+        # To do when there are no packets to process
+        elif self._state == self.PLAY: 
+            if self._update_position():
+                self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
 
-        length = math.sqrt(GameServerProtocol._distance_squared_to(current, target))
-        return [n_x / length, n_y / length]
 
     def broadcast(self, p: packet.Packet, exclude_self: bool = False):
         for other in self.factory.players:
@@ -146,3 +132,4 @@ class GameServerProtocol(WebSocketServerProtocol):
     def send_client(self, p: packet.Packet):
         b = bytes(p)
         self.sendMessage(b)
+
