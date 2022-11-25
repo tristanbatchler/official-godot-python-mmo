@@ -23,7 +23,7 @@ class GameServerProtocol(WebSocketServerProtocol):
                 self._actor = models.Actor.objects.get(user=user)
                 
                 self.send_client(packet.OkPacket())
-                self.send_client(packet.ModelDataPacket(models.create_dict(self._actor)))
+                self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
 
                 self._state = self.PLAY
             else:
@@ -80,6 +80,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         d_x, d_y = utils.direction_to(pos, self._player_target)
         self._actor.instanced_entity.x += d_x * dist
         self._actor.instanced_entity.y += d_y * dist
+        self._actor.instanced_entity.save()
 
         return True
 
@@ -111,6 +112,7 @@ class GameServerProtocol(WebSocketServerProtocol):
 
     # Override
     def onClose(self, wasClean, code, reason):
+        self._actor.save()
         self.factory.players.remove(self)
         print(f"Websocket connection closed{' unexpectedly' if not wasClean else ' cleanly'} with code {code}: {reason}")
 
