@@ -117,7 +117,8 @@ class GameServerProtocol(WebSocketServerProtocol):
 
     # Override
     def onClose(self, wasClean, code, reason):
-        self._actor.save()
+        if self._actor:
+            self._actor.save()
         self.factory.players.remove(self)
         print(f"Websocket connection closed{' unexpectedly' if not wasClean else ' cleanly'} with code {code}: {reason}")
 
