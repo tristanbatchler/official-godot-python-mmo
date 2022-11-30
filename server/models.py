@@ -28,8 +28,8 @@ class Entity(models.Model):
 class InstancedEntity(models.Model):
     x = models.FloatField()
     y = models.FloatField()
-    entity = models.ForeignKey(Entity, on_delete=models.DO_NOTHING)
+    entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
 
 class Actor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.RESTRICT)
-    instanced_entity = models.OneToOneField(InstancedEntity, on_delete=models.RESTRICT)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    instanced_entity = models.OneToOneField(InstancedEntity, on_delete=models.CASCADE)
