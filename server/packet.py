@@ -5,6 +5,7 @@ import enum
 class Action(enum.Enum):
     Ok = enum.auto()
     Deny = enum.auto()
+    Disconnect = enum.auto()
     Login = enum.auto()
     Register = enum.auto()
     Chat = enum.auto()
@@ -34,6 +35,10 @@ class OkPacket(Packet):
 class DenyPacket(Packet):
     def __init__(self, reason: str):
         super().__init__(Action.Deny, reason)
+
+class DisconnectPacket(Packet):
+    def __init__(self, actor_id: int):
+        super().__init__(Action.Disconnect, actor_id)
 
 class LoginPacket(Packet):
     def __init__(self, username: str, password: str):

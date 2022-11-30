@@ -58,9 +58,13 @@ class GameServerProtocol(WebSocketServerProtocol):
                 sender.onPacket(self, packet.ModelDataPacket(models.create_dict(self._actor)))
                 self._known_others.add(sender)
                 
-
         elif p.action == packet.Action.Target:
             self._player_target = p.payloads
+
+        elif p.action == packet.Action.Disconnect:
+            print("errr I should probably be doing something right now...")
+            self._known_others.remove(sender)
+            self.send_client(p)
 
     def _update_position(self) -> bool:
         "Attempt to update the actor's position and return true only if the position was changed"
@@ -119,6 +123,7 @@ class GameServerProtocol(WebSocketServerProtocol):
     def onClose(self, wasClean, code, reason):
         if self._actor:
             self._actor.save()
+            self.broadcast(packet.DisconnectPacket(self._actor.id), exclude_self=True)
         self.factory.players.remove(self)
         print(f"Websocket connection closed{' unexpectedly' if not wasClean else ' cleanly'} with code {code}: {reason}")
 

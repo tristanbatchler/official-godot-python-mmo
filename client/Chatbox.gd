@@ -20,8 +20,12 @@ func _input(event: InputEvent):
 				input_field.release_focus()
 
 
-func add_message(username: String, text: String):
-	chat_log.bbcode_text += username + ' says: "' + text + '"\n'
+func add_message(username, text: String):
+	if username:
+		chat_log.bbcode_text += username + ' says: "' + text + '"\n'
+	else:
+		# Server message
+		chat_log.bbcode_text += "[color=yellow]" + text + "[/color]\n" 
 
 
 func text_entered(text: String):

@@ -52,6 +52,15 @@ func PLAY(p):
 			var username: String = p.payloads[0]
 			var message: String = p.payloads[1]
 			_chatbox.add_message(username, message)
+			
+		"Disconnect":
+			print("Errrr I should probably be doing something right now...")
+			var actor_id: int = p.payloads[0]
+			var actor = _actors[actor_id]
+			_chatbox.add_message(null, actor.actor_name + " has disconnected.")
+			remove_child(actor)
+			_actors.erase(actor_id)
+			
 	
 func _handle_login_button(username: String, password: String):
 	state = funcref(self, "LOGIN")
