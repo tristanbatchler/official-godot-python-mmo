@@ -14,6 +14,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         self._actor: models.Actor = None
         self._player_target: list[float] = None
         self._last_delta_time_checked = None
+        self._known_others: set['GameServerProtocol'] = set()
 
     def LOGIN(self, sender: 'GameServerProtocol', p: packet.Packet):
         if p.action == packet.Action.Login:
@@ -53,6 +54,10 @@ class GameServerProtocol(WebSocketServerProtocol):
         
         elif p.action == packet.Action.ModelData:
             self.send_client(p)
+            if sender not in self._known_others:
+                sender.onPacket(self, packet.ModelDataPacket(models.create_dict(self._actor)))
+                self._known_others.add(sender)
+                
 
         elif p.action == packet.Action.Target:
             self._player_target = p.payloads
