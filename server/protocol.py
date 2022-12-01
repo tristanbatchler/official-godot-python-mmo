@@ -65,7 +65,6 @@ class GameServerProtocol(WebSocketServerProtocol):
             self._player_target = p.payloads
 
         elif p.action == packet.Action.Disconnect:
-            print("errr I should probably be doing something right now...")
             self._known_others.remove(sender)
             self.send_client(p)
 
