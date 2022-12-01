@@ -12,6 +12,8 @@ var velocity: Vector2 = Vector2.ZERO
 var is_player: bool = false
 var _player_target: Vector2
 
+var rubber_band_radius: float = 200
+
 var speed: float = 70.0
 
 func _ready():
@@ -31,6 +33,10 @@ func update(new_model: Dictionary):
 				body.position = server_position
 				if is_player:
 					_player_target = server_position
+			elif (body.position - server_position).length() > rubber_band_radius:
+				# Rubber band if body position too far away from server position
+				body.position = server_position
+				
 			
 		if ientity.has("entity"):
 			var entity = ientity["entity"]
