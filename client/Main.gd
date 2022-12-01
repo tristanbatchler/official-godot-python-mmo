@@ -141,7 +141,7 @@ func _handle_network_error():
 	OS.alert("There was an error")
 	
 	
-func _input(event):
+func _unhandled_input(event: InputEvent):
 	if _player_actor and event.is_action_released("click"):
 		var target = _player_actor.body.get_global_mouse_position()
 		_player_actor._player_target = target
