@@ -5,6 +5,7 @@ import time
 from server import packet
 from server import models
 from autobahn.twisted.websocket import WebSocketServerProtocol
+from autobahn.exception import Disconnected
 
 class GameServerProtocol(WebSocketServerProtocol):
     def __init__(self):
@@ -148,5 +149,9 @@ class GameServerProtocol(WebSocketServerProtocol):
 
     def send_client(self, p: packet.Packet):
         b = bytes(p)
-        self.sendMessage(b)
+        try:
+            self.sendMessage(b)
+        except Disconnected:
+            print(f"Couldn't send {p} because client disconnected.")
+
 
