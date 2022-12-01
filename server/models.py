@@ -18,6 +18,26 @@ def create_dict(model: models.Model) -> dict:
     
     return d
 
+def get_delta_dict(model_dict_before: dict, model_dict_acter: dict):
+    """
+    Returns a dictionary containing all differences between the supplied model dicts
+    (except for the ID and Model Type).
+    """
+
+    delta: dict = {}
+
+    for k in model_dict_before.keys() & model_dict_acter.keys():  # Intersection of keysets
+        v_before = model_dict_before[k]
+        v_after = model_dict_acter[k]
+
+        if v_before != v_after and isinstance(v_before, dict):
+            delta[k] = get_delta_dict(v_before, v_after)
+
+        elif v_before != v_after or k in ("id", "model_type") :
+            delta[k] = v_after
+    
+    return delta
+
 class User(models.Model):
     username = models.CharField(unique=True, max_length=20)
     password = models.CharField(max_length=99)

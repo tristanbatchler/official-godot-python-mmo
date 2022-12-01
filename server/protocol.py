@@ -24,7 +24,9 @@ class GameServerProtocol(WebSocketServerProtocol):
                 self._actor = models.Actor.objects.get(user=user)
                 
                 self.send_client(packet.OkPacket())
-                self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
+
+                # Send full model data the first time we log in
+                self.broadcast(packet.ModelDeltaPacket(models.create_dict(self._actor)))
 
                 self._state = self.PLAY
             else:
@@ -52,10 +54,11 @@ class GameServerProtocol(WebSocketServerProtocol):
             else:
                 self.send_client(p)
         
-        elif p.action == packet.Action.ModelData:
+        elif p.action == packet.Action.ModelDelta:
             self.send_client(p)
             if sender not in self._known_others:
-                sender.onPacket(self, packet.ModelDataPacket(models.create_dict(self._actor)))
+                # Send our full model data to the new player
+                sender.onPacket(self, packet.ModelDeltaPacket(models.create_dict(self._actor)))
                 self._known_others.add(sender)
                 
         elif p.action == packet.Action.Target:
@@ -101,8 +104,10 @@ class GameServerProtocol(WebSocketServerProtocol):
 
         # To do when there are no packets to process
         elif self._state == self.PLAY: 
+            actor_dict_before: dict = models.create_dict(self._actor)
             if self._update_position():
-                self.broadcast(packet.ModelDataPacket(models.create_dict(self._actor)))
+                actor_dict_after: dict = models.create_dict(self._actor)
+                self.broadcast(packet.ModelDeltaPacket(models.get_delta_dict(actor_dict_before, actor_dict_after)))
 
 
     def broadcast(self, p: packet.Packet, exclude_self: bool = False):

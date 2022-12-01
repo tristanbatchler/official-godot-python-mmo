@@ -9,7 +9,7 @@ class Action(enum.Enum):
     Login = enum.auto()
     Register = enum.auto()
     Chat = enum.auto()
-    ModelData = enum.auto()
+    ModelDelta = enum.auto()
     Target = enum.auto()
 
 
@@ -52,9 +52,9 @@ class ChatPacket(Packet):
     def __init__(self, sender: str, message: str):
         super().__init__(Action.Chat, sender, message)
 
-class ModelDataPacket(Packet):
+class ModelDeltaPacket(Packet):
     def __init__(self, model_data: dict):
-        super().__init__(Action.ModelData, model_data)
+        super().__init__(Action.ModelDelta, model_data)
 
 class TargetPacket(Packet):
     def __init__(self, t_x: float, t_y: float):

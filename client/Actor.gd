@@ -20,20 +20,25 @@ func _ready():
 func update(new_model: Dictionary):
 	.update(new_model)
 	
-	var ientity = new_model["instanced_entity"]
-	server_position = Vector2(float(ientity["x"]), float(ientity["y"]))
-	
-	if not initialised_position:
-		initialised_position = true
-		body.position = server_position
-		if is_player:
-			_player_target = server_position
+	if new_model.has("instanced_entity"):
+		var ientity = new_model["instanced_entity"]
 		
-	
-	actor_name = ientity["entity"]["name"]
-	
-	if label:
-		label.text = actor_name
+		if ientity.has("x") and ientity.has("y"):
+			server_position = Vector2(float(ientity["x"]), float(ientity["y"]))
+			
+			if not initialised_position:
+				initialised_position = true
+				body.position = server_position
+				if is_player:
+					_player_target = server_position
+			
+		if ientity.has("entity"):
+			var entity = ientity["entity"]
+			if entity.has("name"):
+				actor_name = ientity["entity"]["name"]
+		
+				if label:
+					label.text = actor_name
 
 func _physics_process(delta):	
 	var target: Vector2

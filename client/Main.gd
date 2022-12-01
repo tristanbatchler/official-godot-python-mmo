@@ -45,7 +45,7 @@ func REGISTER(p):
 
 func PLAY(p):
 	match p.action:
-		"ModelData":
+		"ModelDelta":
 			var model_data: Dictionary = p.payloads[0]
 			_update_models(model_data)
 		"Chat":
