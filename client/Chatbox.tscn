@@ -19,10 +19,12 @@ anchor_bottom = 1.0
 margin_left = 10.0
 margin_right = -10.0
 margin_bottom = -10.0
+mouse_filter = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/VBoxContainer"]
 margin_right = 1004.0
 margin_bottom = 160.0
+mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
