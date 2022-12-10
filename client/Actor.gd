@@ -3,6 +3,7 @@ extends "res://model.gd"
 onready var body: KinematicBody2D = get_node("KinematicBody2D")
 onready var label: Label = get_node("KinematicBody2D/Label")
 onready var sprite: Sprite = get_node("KinematicBody2D/Sprite")
+onready var animation_player: AnimationPlayer = get_node("KinematicBody2D/Sprite/AnimationPlayer")
 
 var server_position: Vector2
 var initialised_position: bool = false
@@ -56,4 +57,24 @@ func _physics_process(delta):
 	velocity = (target - body.position).normalized() * speed
 	if (target - body.position).length() > 5:
 		velocity = body.move_and_slide(velocity)
+	else:
+		velocity = Vector2.ZERO
+
+func _process(delta):
+	# Get the direction angle
+	var angle = velocity.angle()
+
+	# Check which quadrant the angle is in and play animation accordingly
+	if velocity.length() <= 5:
+		animation_player.stop()
+	elif -PI/4 <= angle and angle < PI/4:
+		animation_player.play("walk_right")
+	elif PI/4 <= angle  and angle < 3*PI/4:
+		animation_player.play("walk_down")
+	elif -3*PI/4 <= angle and angle < -PI/4:
+		animation_player.play("walk_up")
+	else:
+		animation_player.play("walk_left")
+		
+	label.text = str(velocity)
 
