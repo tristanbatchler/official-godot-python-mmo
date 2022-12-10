@@ -1,25 +1,79 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://Login.gd" type="Script" id=1]
+[ext_resource path="res://Avatar.tscn" type="PackedScene" id=2]
 
 [node name="Login" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+anchor_left = 0.4
+anchor_top = 0.25
+anchor_right = 0.6
+anchor_bottom = 0.33
+
+[node name="Control" type="Control" parent="CanvasLayer/Panel"]
+anchor_left = 0.5
+anchor_top = -1.0
+anchor_right = 0.5
+margin_left = -1.52588e-05
+margin_top = 10.8
+margin_right = -1.52588e-05
+margin_bottom = 10.8
+
+[node name="Avatar" parent="CanvasLayer/Panel/Control" instance=ExtResource( 2 )]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Panel"]
+anchor_left = 0.1
+anchor_top = 0.1
+anchor_right = 0.9
+anchor_bottom = 0.9
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer"]
+margin_right = 163.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+text = "Choose your avatar!"
+align = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
+margin_top = 18.0
+margin_right = 163.0
+margin_bottom = 38.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Button_Left" type="Button" parent="CanvasLayer/Panel/VBoxContainer/HBoxContainer"]
+margin_right = 51.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "<"
+
+[node name="Button_Ok" type="Button" parent="CanvasLayer/Panel/VBoxContainer/HBoxContainer"]
+margin_left = 55.0
+margin_right = 107.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = "OK"
+
+[node name="Button_Right" type="Button" parent="CanvasLayer/Panel/VBoxContainer/HBoxContainer"]
+margin_left = 111.0
+margin_right = 163.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+text = ">"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
 anchor_left = 0.2
 anchor_top = 0.4
 anchor_right = 0.8
 anchor_bottom = 0.6
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="GridContainer" type="GridContainer" parent="CanvasLayer/VBoxContainer"]
 margin_right = 614.0
