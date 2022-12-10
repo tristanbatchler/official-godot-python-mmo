@@ -11,7 +11,7 @@ var actor_name: String
 var velocity: Vector2 = Vector2.ZERO
 
 var is_player: bool = false
-var _player_target: Vector2
+var direction: Vector2 = Vector2.ZERO
 
 var rubber_band_radius: float = 200
 
@@ -36,8 +36,7 @@ func update(new_model: Dictionary):
 			if not initialised_position:
 				initialised_position = true
 				body.position = server_position
-				if is_player:
-					_player_target = server_position
+
 			elif (body.position - server_position).length() > rubber_band_radius:
 				# Rubber band if body position too far away from server position
 				body.position = server_position
@@ -52,17 +51,17 @@ func update(new_model: Dictionary):
 					label.text = actor_name
 
 func _physics_process(delta):	
-	var target: Vector2
-	if is_player:
-		target = _player_target
+	if not is_player:
+		velocity = (server_position - body.position).normalized() * speed
+		if (server_position - body.position).length() > 5:
+			velocity = body.move_and_slide(velocity)
+		else:
+			velocity = Vector2.ZERO
+
 	else:
-		target = server_position
-		
-	velocity = (target - body.position).normalized() * speed
-	if (target - body.position).length() > 5:
+		# Move according to direction
+		velocity = direction * speed
 		velocity = body.move_and_slide(velocity)
-	else:
-		velocity = Vector2.ZERO
 
 func _process(delta):
 	# Get the direction angle

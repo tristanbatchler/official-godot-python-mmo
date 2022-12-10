@@ -13,7 +13,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         self._packet_queue: queue.Queue[tuple['GameServerProtocol', packet.Packet]] = queue.Queue()
         self._state: callable = self.LOGIN
         self._actor: models.Actor = None
-        self._player_target: list[float] = None
+        self._player_direction: list[float] = None
         self._last_delta_time_checked = None
         self._known_others: set['GameServerProtocol'] = set()
 
@@ -62,8 +62,8 @@ class GameServerProtocol(WebSocketServerProtocol):
                 sender.onPacket(self, packet.ModelDeltaPacket(models.create_dict(self._actor)))
                 self._known_others.add(sender)
                 
-        elif p.action == packet.Action.Target:
-            self._player_target = p.payloads
+        elif p.action == packet.Action.Direction:
+            self._player_direction = p.payloads
 
         elif p.action == packet.Action.Disconnect:
             self._known_others.remove(sender)
@@ -71,7 +71,7 @@ class GameServerProtocol(WebSocketServerProtocol):
 
     def _update_position(self) -> bool:
         "Attempt to update the actor's position and return true only if the position was changed"
-        if not self._player_target:
+        if not self._player_direction:
             return False
         pos = [self._actor.instanced_entity.x, self._actor.instanced_entity.y]
 
@@ -84,12 +84,14 @@ class GameServerProtocol(WebSocketServerProtocol):
         # Use delta time to calculate distance to travel this time
         dist: float = 70 * delta_time
         
-        # Early exit if we are already within an acceptable distance of the target
-        if math.dist(pos, self._player_target) < dist:
+        # Update our model
+        d_x, d_y = self._player_direction
+        new_x = pos[0] + d_x * dist
+        new_y = pos[1] + d_y * dist
+
+        if math.dist(pos, [new_x, new_y]) < 0.01:
             return False
-        
-        # Update our model if we're not already close enough to the target
-        d_x, d_y = utils.direction_to(pos, self._player_target)
+
         self._actor.instanced_entity.x += d_x * dist
         self._actor.instanced_entity.y += d_y * dist
         self._actor.instanced_entity.save()

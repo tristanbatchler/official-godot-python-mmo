@@ -10,7 +10,7 @@ class Action(enum.Enum):
     Register = enum.auto()
     Chat = enum.auto()
     ModelDelta = enum.auto()
-    Target = enum.auto()
+    Direction = enum.auto()
 
 
 class Packet:
@@ -56,9 +56,9 @@ class ModelDeltaPacket(Packet):
     def __init__(self, model_data: dict):
         super().__init__(Action.ModelDelta, model_data)
 
-class TargetPacket(Packet):
-    def __init__(self, t_x: float, t_y: float):
-        super().__init__(Action.Target, t_x, t_y)
+class DirectionPacket(Packet):
+    def __init__(self, d_x: float, d_y: float):
+        super().__init__(Action.Direction, d_x, d_y)
 
 
 def from_json(json_str: str) -> Packet:

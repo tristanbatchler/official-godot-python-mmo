@@ -142,10 +142,30 @@ func _handle_network_error():
 	
 	
 func _unhandled_input(event: InputEvent):
-	if _player_actor and event.is_action_released("click"):
-		var target = _player_actor.body.get_global_mouse_position()
-		_player_actor._player_target = target
-		var p: Packet = Packet.new("Target", [target.x, target.y])
-		_network_client.send_packet(p)
+	# Move with the arrow keys
+	if _player_actor:
+		var direction: Vector2 = Vector2.ZERO
+		if Input.is_action_pressed("right"):
+			direction.x += 1
+		if Input.is_action_pressed("left"):
+			direction.x -= 1
+		if Input.is_action_pressed("down"):
+			direction.y += 1
+		if Input.is_action_pressed("up"):
+			direction.y -= 1
+		direction = direction.normalized()
+
+		# Send direction packet only if it changed
+		if direction != _player_actor.direction:
+			_player_actor.direction = direction
+			var p: Packet = Packet.new("Direction", [direction.x, direction.y])
+			_network_client.send_packet(p)
+
+
+	# if _player_actor and event.is_action_released("click"):
+	# 	var target = _player_actor.body.get_global_mouse_position()
+	# 	_player_actor._player_target = target
+	# 	var p: Packet = Packet.new("Target", [target.x, target.y])
+	# 	_network_client.send_packet(p)
 
 
