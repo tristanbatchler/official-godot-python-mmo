@@ -1,6 +1,6 @@
 import math
 
-def direction_to(current: list[float], target: list[float]) -> list[float]:
+def direction_to(current: list, target: list) -> list:
     "Return the vector with unit length pointing in the direction from current to target"
     if target == current:
         return [0, 0]
