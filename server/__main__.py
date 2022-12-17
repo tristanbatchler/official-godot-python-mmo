@@ -13,6 +13,7 @@ class GameFactory(WebSocketServerFactory):
 
         self.players: set[protocol.GameServerProtocol] = set()
         self.tickrate: int = 20
+        self.user_ids_logged_in: set[int] = set()
 
         tickloop = task.LoopingCall(self.tick)
         tickloop.start(1 / self.tickrate)
@@ -20,6 +21,12 @@ class GameFactory(WebSocketServerFactory):
     def tick(self):
         for p in self.players:
             p.tick()
+
+    def remove_protocol(self, p: protocol.GameServerProtocol):
+        self.players.remove(p)
+        if p._actor and p._actor.user.id in self.user_ids_logged_in:
+            self.user_ids_logged_in.remove(p._actor.user.id)
+        
 
     # Override
     def buildProtocol(self, addr):

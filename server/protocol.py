@@ -22,18 +22,30 @@ class GameServerProtocol(WebSocketServerProtocol):
         if p.action == packet.Action.Login:
             username, password = p.payloads
 
+            # Try to get an existing user whose credentials match
             user = authenticate(username=username, password=password)
-            if user:
-                self._actor = models.Actor.objects.get(user=user)
-                
-                self.send_client(packet.OkPacket())
-
-                # Send full model data the first time we log in
-                self.broadcast(packet.ModelDeltaPacket(models.create_dict(self._actor)))
-
-                self._state = self.PLAY
-            else:
+            
+            # If credentials don't match, deny and return
+            if not user:
                 self.send_client(packet.DenyPacket("Username or password incorrect"))
+                return
+
+            # If user already logged in, deny and return
+            if user.id in self.factory.user_ids_logged_in:
+                self.send_client(packet.DenyPacket("You are already logged in"))
+                return
+
+            # Otherwise, proceed
+            self._actor = models.Actor.objects.get(user=user)
+            self.send_client(packet.OkPacket())
+
+            # Send full model data the first time we log in
+            self.broadcast(packet.ModelDeltaPacket(models.create_dict(self._actor)))
+
+            self.factory.user_ids_logged_in.add(user.id)
+
+            self._state = self.PLAY
+                
 
         elif p.action == packet.Action.Register:
             username, password, avatar_id = p.payloads
@@ -137,7 +149,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         if self._actor:
             self._actor.save()
             self.broadcast(packet.DisconnectPacket(self._actor.id), exclude_self=True)
-        self.factory.players.remove(self)
+        self.factory.remove_protocol(self)
         print(f"Websocket connection closed{' unexpectedly' if not wasClean else ' cleanly'} with code {code}: {reason}")
 
     # Override
