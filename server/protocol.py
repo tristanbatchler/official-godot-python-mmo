@@ -12,7 +12,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         self._packet_queue: queue.Queue[tuple['GameServerProtocol', packet.Packet]] = queue.Queue()
         self._state: callable = self.LOGIN
         self._actor: models.Actor = None
-        self._player_target: list[float] = None
+        self._player_target: list = None
         self._last_delta_time_checked = None
 
     def LOGIN(self, sender: 'GameServerProtocol', p: packet.Packet):
