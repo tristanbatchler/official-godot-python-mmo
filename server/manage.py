@@ -8,7 +8,9 @@ root = file.parents[1]
 sys.path.append(str(root))
 
 INSTALLED_APPS = [
-    'server'
+    'server',
+    'django.contrib.auth',
+    'django.contrib.contenttypes'
 ]
 
 DATABASES = {

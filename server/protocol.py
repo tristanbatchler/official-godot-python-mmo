@@ -6,6 +6,7 @@ from server import packet
 from server import models
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from autobahn.exception import Disconnected
+from django.contrib.auth import authenticate
 
 class GameServerProtocol(WebSocketServerProtocol):
     def __init__(self):
@@ -20,8 +21,9 @@ class GameServerProtocol(WebSocketServerProtocol):
     def LOGIN(self, sender: 'GameServerProtocol', p: packet.Packet):
         if p.action == packet.Action.Login:
             username, password = p.payloads
-            if models.User.objects.filter(username=username, password=password).exists():
-                user = models.User.objects.get(username=username)
+
+            user = authenticate(username=username, password=password)
+            if user:
                 self._actor = models.Actor.objects.get(user=user)
                 
                 self.send_client(packet.OkPacket())
@@ -35,18 +37,24 @@ class GameServerProtocol(WebSocketServerProtocol):
 
         elif p.action == packet.Action.Register:
             username, password, avatar_id = p.payloads
+            
+            if not username or not password:
+                self.send_client(packet.DenyPacket("Username or password must not be empty"))
+                return
+
             if models.User.objects.filter(username=username).exists():
                 self.send_client(packet.DenyPacket("This username is already taken"))
-            else:
-                user = models.User(username=username, password=password)
-                user.save()
-                player_entity = models.Entity(name=username)
-                player_entity.save()
-                player_ientity = models.InstancedEntity(entity=player_entity, x=0, y=0)
-                player_ientity.save()
-                player = models.Actor(instanced_entity=player_ientity, user=user, avatar_id=avatar_id)
-                player.save()
-                self.send_client(packet.OkPacket())
+                return
+
+            user = models.User.objects.create_user(username=username, password=password)
+            user.save()
+            player_entity = models.Entity(name=username)
+            player_entity.save()
+            player_ientity = models.InstancedEntity(entity=player_entity, x=0, y=0)
+            player_ientity.save()
+            player = models.Actor(instanced_entity=player_ientity, user=user, avatar_id=avatar_id)
+            player.save()
+            self.send_client(packet.OkPacket())
 
     def PLAY(self, sender: 'GameServerProtocol', p: packet.Packet):
         if p.action == packet.Action.Chat:
