@@ -9,6 +9,7 @@ signal error
 
 # Our WebSocketClient instance
 var _client = WebSocketClient.new()
+var _cert = X509Certificate.new()
 
 
 func _ready():
@@ -16,12 +17,14 @@ func _ready():
 	_client.connect("connection_error", self, "_closed")
 	_client.connect("connection_established", self, "_connected")
 	_client.connect("data_received", self, "_on_data")
+	_cert.load("res://server.crt")
+	_client.trusted_ssl_certificate = _cert
 
 
 func connect_to_server(hostname: String, port: int) -> void:
 	# Connects to the server or emits an error signal.
 	# If connected, emits a connect signal.
-	var websocket_url = "ws://%s:%d" % [hostname, port]
+	var websocket_url = "wss://%s:%d" % [hostname, port]
 	var err = _client.connect_to_url(websocket_url)
 	if err:
 		print("Unable to connect")
