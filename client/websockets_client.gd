@@ -9,17 +9,13 @@ signal error
 
 # Our WebSocketClient instance
 var _client = WebSocketClient.new()
-var _cert = X509Certificate.new()
-
 
 func _ready():
 	_client.connect("connection_closed", self, "_closed")
 	_client.connect("connection_error", self, "_closed")
 	_client.connect("connection_established", self, "_connected")
 	_client.connect("data_received", self, "_on_data")
-	_cert.load("res://server.crt")
 	_client.verify_ssl = false
-	_client.trusted_ssl_certificate = _cert
 
 
 func connect_to_server(hostname: String, port: int) -> void:
