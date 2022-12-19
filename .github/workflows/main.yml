@@ -28,9 +28,9 @@ jobs:
           latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
           git checkout $latestTag
           source ${{ secrets.REMOTE_GAME_DIR }}/server/venv/activate
-          python ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py makemigrations server
-          python ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py migrate
-          tmux new-session -d -s gameserver \; send-keys "python ${{ secrets.REMOTE_GAME_DIR }}/server" Enter
+          python3 ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py makemigrations server
+          python3 ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py migrate
+          tmux new-session -d -s gameserver \; send-keys "python3 ${{ secrets.REMOTE_GAME_DIR }}/server" Enter
           exit
         host: ${{ secrets.REMOTE_HOST }}
         user: ${{ secrets.REMOTE_USER }}
