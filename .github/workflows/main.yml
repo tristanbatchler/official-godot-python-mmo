@@ -27,10 +27,9 @@ jobs:
         command: |
           tmux kill-session -t gameserver
           cd ${{ secrets.REMOTE_GAME_DIR }}
-          git stash
           git fetch --all --tags --force
           latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          git checkout $latestTag
+          git checkout $latestTag --force
           source ${{ secrets.REMOTE_GAME_DIR }}/server/venv/bin/activate
           python3 ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py makemigrations server
           python3 ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py migrate
