@@ -24,6 +24,7 @@ jobs:
         command: |
           tmux kill-session -t gameserver
           cd ${{ secrets.REMOTE_GAME_DIR }}
+          git stash
           git fetch --tags
           latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
           git checkout $latestTag
