@@ -3,6 +3,7 @@ name: Deploy MMO on production server
 # Controls when the action will run. Triggers the workflow on any release updates (the workflow will only (re)deploy the latest tag though)
 on:
   release:
+    types: [published]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
