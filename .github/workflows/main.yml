@@ -1,9 +1,8 @@
 name: Deploy MMO on production server
 
-# Controls when the action will run. Triggers the workflow on push or pull request events against any branch (the workflow will only (re)deploy the latest tag though)
+# Controls when the action will run. Triggers the workflow on any release updates (the workflow will only (re)deploy the latest tag though)
 on:
-  push:
-  pull_request:
+  release:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
