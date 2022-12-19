@@ -28,7 +28,7 @@ jobs:
           tmux kill-session -t gameserver
           cd ${{ secrets.REMOTE_GAME_DIR }}
           git stash
-          git fetch --tags
+          git fetch --all --tags --force
           latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
           git checkout $latestTag
           source ${{ secrets.REMOTE_GAME_DIR }}/server/venv/bin/activate
