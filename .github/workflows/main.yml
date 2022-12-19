@@ -19,13 +19,9 @@ jobs:
 
     # (Re)deploys the latest release on the remote host
     - name: Stop the currently running server
-      uses: appleboy/ssh-action@v0.1.2
+      uses: fifsky/ssh-action@master
       with:
-        host: ${{ secrets.REMOTE_HOST }}
-        port: ${{ secrets.REMOTE_PORT }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
+        command: |
           tmux kill-session -t gameserver
           cd ${{ secrets.REMOTE_GAME_DIR }}
           git fetch --tags
@@ -36,3 +32,6 @@ jobs:
           python ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py migrate
           tmux new-session -d -s gameserver \; send-keys "python ${{ secrets.REMOTE_GAME_DIR }}/server" Enter
           exit
+        host: ${{ secrets.REMOTE_HOST }}
+        user: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_KEY }}
