@@ -2,6 +2,7 @@ server/__pycache__
 server/venv
 server/db.sqlite3
 server/migrations
+server/certs
 
 # Godot-specific ignores
 client/.import/

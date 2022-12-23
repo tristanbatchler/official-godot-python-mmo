@@ -1,5 +1,7 @@
 from django.db import models
 from django.forms import model_to_dict
+from django.contrib.auth import models as auth_models
+User = auth_models.User
 
 def create_dict(model: models.Model) -> dict:
     """
@@ -29,18 +31,18 @@ def get_delta_dict(model_dict_before: dict, model_dict_after: dict) -> dict:
     for k in model_dict_before.keys() & model_dict_after.keys():  # Intersection of keysets
         v_before = model_dict_before[k]
         v_after = model_dict_after[k]
-        
-        if v_before != v_after or k in ("id", "model_type") :
+
+        if k in ("id", "model_type"):
             delta[k] = v_after
-        
-        elif v_before != v_after and isinstance(v_before, dict):
+        if v_before == v_after:
+            continue
+
+        if not isinstance(v_before, dict):
+            delta[k] = v_after
+        else:
             delta[k] = get_delta_dict(v_before, v_after)
 
     return delta
-
-class User(models.Model):
-    username = models.CharField(unique=True, max_length=20)
-    password = models.CharField(max_length=99)
 
 class Entity(models.Model):
     name = models.CharField(max_length=100)

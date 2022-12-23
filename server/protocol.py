@@ -6,6 +6,7 @@ from server import packet
 from server import models
 from autobahn.twisted.websocket import WebSocketServerProtocol
 from autobahn.exception import Disconnected
+from django.contrib.auth import authenticate
 
 class GameServerProtocol(WebSocketServerProtocol):
     def __init__(self):
@@ -20,33 +21,52 @@ class GameServerProtocol(WebSocketServerProtocol):
     def LOGIN(self, sender: 'GameServerProtocol', p: packet.Packet):
         if p.action == packet.Action.Login:
             username, password = p.payloads
-            if models.User.objects.filter(username=username, password=password).exists():
-                user = models.User.objects.get(username=username)
-                self._actor = models.Actor.objects.get(user=user)
-                
-                self.send_client(packet.OkPacket())
 
-                # Send full model data the first time we log in
-                self.broadcast(packet.ModelDeltaPacket(models.create_dict(self._actor)))
-
-                self._state = self.PLAY
-            else:
+            # Try to get an existing user whose credentials match
+            user = authenticate(username=username, password=password)
+            
+            # If credentials don't match, deny and return
+            if not user:
                 self.send_client(packet.DenyPacket("Username or password incorrect"))
+                return
+
+            # If user already logged in, deny and return
+            if user.id in self.factory.user_ids_logged_in:
+                self.send_client(packet.DenyPacket("You are already logged in"))
+                return
+
+            # Otherwise, proceed
+            self._actor = models.Actor.objects.get(user=user)
+            self.send_client(packet.OkPacket())
+
+            # Send full model data the first time we log in
+            self.broadcast(packet.ModelDeltaPacket(models.create_dict(self._actor)))
+
+            self.factory.user_ids_logged_in.add(user.id)
+
+            self._state = self.PLAY
+                
 
         elif p.action == packet.Action.Register:
             username, password, avatar_id = p.payloads
+            
+            if not username or not password:
+                self.send_client(packet.DenyPacket("Username or password must not be empty"))
+                return
+
             if models.User.objects.filter(username=username).exists():
                 self.send_client(packet.DenyPacket("This username is already taken"))
-            else:
-                user = models.User(username=username, password=password)
-                user.save()
-                player_entity = models.Entity(name=username)
-                player_entity.save()
-                player_ientity = models.InstancedEntity(entity=player_entity, x=0, y=0)
-                player_ientity.save()
-                player = models.Actor(instanced_entity=player_ientity, user=user, avatar_id=avatar_id)
-                player.save()
-                self.send_client(packet.OkPacket())
+                return
+
+            user = models.User.objects.create_user(username=username, password=password)
+            user.save()
+            player_entity = models.Entity(name=username)
+            player_entity.save()
+            player_ientity = models.InstancedEntity(entity=player_entity, x=0, y=0)
+            player_ientity.save()
+            player = models.Actor(instanced_entity=player_ientity, user=user, avatar_id=avatar_id)
+            player.save()
+            self.send_client(packet.OkPacket())
 
     def PLAY(self, sender: 'GameServerProtocol', p: packet.Packet):
         if p.action == packet.Action.Chat:
@@ -131,7 +151,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         if self._actor:
             self._actor.save()
             self.broadcast(packet.DisconnectPacket(self._actor.id), exclude_self=True)
-        self.factory.players.remove(self)
+        self.factory.remove_protocol(self)
         print(f"Websocket connection closed{' unexpectedly' if not wasClean else ' cleanly'} with code {code}: {reason}")
 
     # Override

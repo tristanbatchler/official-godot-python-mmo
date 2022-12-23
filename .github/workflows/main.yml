@@ -1,0 +1,40 @@
+name: Deploy MMO on production server
+
+# Controls when the action will run. Triggers the workflow on any release updates (the workflow will only (re)deploy the latest tag though)
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - v1.*
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@master
+
+    # (Re)deploys the latest release on the remote host
+    - name: Stop the currently running server
+      uses: fifsky/ssh-action@master
+      with:
+        command: |
+          tmux kill-session -t gameserver
+          cd ${{ secrets.REMOTE_GAME_DIR }}
+          git fetch --all --tags --force
+          latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          git checkout $latestTag --force
+          source ${{ secrets.REMOTE_GAME_DIR }}/server/venv/bin/activate
+          python3 ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py makemigrations server
+          python3 ${{ secrets.REMOTE_GAME_DIR }}/server/manage.py migrate
+          tmux new-session -d -s gameserver \; send-keys "python3 ${{ secrets.REMOTE_GAME_DIR }}/server" Enter
+          exit
+        host: ${{ secrets.REMOTE_HOST }}
+        user: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_KEY }}
