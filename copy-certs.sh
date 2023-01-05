@@ -44,8 +44,8 @@ if [ ! -d "$certs_dir" ]; then
 fi
 
 echo "$(date) Attempting to copy Let's Encrypt certificates to $certs_dir"
-cp /etc/letsencrypt/live/godmmo.tx2600.net/fullchain.pem "$certs_dir/server.crt"
-cp /etc/letsencrypt/live/godmmo.tx2600.net/privkey.pem "$certs_dir/server.key"
+cp /etc/letsencrypt/live/*/fullchain.pem "$certs_dir/server.crt"
+cp /etc/letsencrypt/live/*/privkey.pem "$certs_dir/server.key"
 echo "$(date) Done"
 
 echo "$(date) Attempting to change ownership of $certs_dir/server.crt and $certs_dir/server.key to $server_usr"
