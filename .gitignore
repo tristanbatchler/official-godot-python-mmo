@@ -1,3 +1,5 @@
+*.cache
+*.cfg
 server/__pycache__
 server/venv
 server/db.sqlite3

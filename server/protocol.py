@@ -120,6 +120,7 @@ class GameServerProtocol(WebSocketServerProtocol):
         # Process the next packet in the queue
         if not self._packet_queue.empty():
             s, p = self._packet_queue.get()
+            print(f"processing packet {s} {p}")
             self._state(s, p)
 
         # To do when there are no packets to process
@@ -158,7 +159,9 @@ class GameServerProtocol(WebSocketServerProtocol):
 
         try:
             p: packet.Packet = packet.from_json(decoded_payload)
+            print(p)
         except Exception as e:
+            p = None
             print(f"Could not load message as packet: {e}. Message was: {payload.decode('utf8')}")
 
         self.onPacket(self, p)

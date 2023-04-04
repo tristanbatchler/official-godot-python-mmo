@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "package"
+version = "0.1.0"
+description = ""
+authors = ["wsankey <wsankey@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Twisted = "^22.10.0"
+Django = "^4.1.7"
+pyopenssl = "^23.1.1"
+service-identity = "^21.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

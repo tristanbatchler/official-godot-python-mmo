@@ -20,10 +20,10 @@ anchor_bottom = 0.33
 anchor_left = 0.5
 anchor_top = -1.0
 anchor_right = 0.5
-margin_left = -1.52588e-05
-margin_top = 10.8
-margin_right = -1.52588e-05
-margin_bottom = 10.8
+offset_left = -1.52588e-05
+offset_top = 10.8
+offset_right = -1.52588e-05
+offset_bottom = 10.8
 
 [node name="Avatar" parent="CanvasLayer/Panel/Control" instance=ExtResource( 2 )]
 
@@ -36,36 +36,36 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="CanvasLayer/Panel/VBoxContainer"]
-margin_right = 163.0
-margin_bottom = 14.0
+offset_right = 163.0
+offset_bottom = 14.0
 size_flags_horizontal = 3
 text = "Choose your avatar!"
 align = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Panel/VBoxContainer"]
-margin_top = 18.0
-margin_right = 163.0
-margin_bottom = 38.0
+offset_top = 18.0
+offset_right = 163.0
+offset_bottom = 38.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Button_Left" type="Button" parent="CanvasLayer/Panel/VBoxContainer/HBoxContainer"]
-margin_right = 51.0
-margin_bottom = 20.0
+offset_right = 51.0
+offset_bottom = 20.0
 size_flags_horizontal = 3
 text = "<"
 
 [node name="Button_Ok" type="Button" parent="CanvasLayer/Panel/VBoxContainer/HBoxContainer"]
-margin_left = 55.0
-margin_right = 107.0
-margin_bottom = 20.0
+offset_left = 55.0
+offset_right = 107.0
+offset_bottom = 20.0
 size_flags_horizontal = 3
 text = "OK"
 
 [node name="Button_Right" type="Button" parent="CanvasLayer/Panel/VBoxContainer/HBoxContainer"]
-margin_left = 111.0
-margin_right = 163.0
-margin_bottom = 20.0
+offset_left = 111.0
+offset_right = 163.0
+offset_bottom = 20.0
 size_flags_horizontal = 3
 text = ">"
 
@@ -76,58 +76,58 @@ anchor_right = 0.8
 anchor_bottom = 0.6
 
 [node name="GridContainer" type="GridContainer" parent="CanvasLayer/VBoxContainer"]
-margin_right = 614.0
-margin_bottom = 52.0
+offset_right = 614.0
+offset_bottom = 52.0
 columns = 2
 
 [node name="Label_Username" type="Label" parent="CanvasLayer/VBoxContainer/GridContainer"]
-margin_top = 5.0
-margin_right = 74.0
-margin_bottom = 19.0
+offset_top = 5.0
+offset_right = 74.0
+offset_bottom = 19.0
 text = "Username: "
 
 [node name="LineEdit_Username" type="LineEdit" parent="CanvasLayer/VBoxContainer/GridContainer"]
-margin_left = 78.0
-margin_right = 614.0
-margin_bottom = 24.0
+offset_left = 78.0
+offset_right = 614.0
+offset_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="Label_Password" type="Label" parent="CanvasLayer/VBoxContainer/GridContainer"]
-margin_top = 33.0
-margin_right = 74.0
-margin_bottom = 47.0
+offset_top = 33.0
+offset_right = 74.0
+offset_bottom = 47.0
 text = "Password: "
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="LineEdit_Password" type="LineEdit" parent="CanvasLayer/VBoxContainer/GridContainer"]
-margin_left = 78.0
-margin_top = 28.0
-margin_right = 614.0
-margin_bottom = 52.0
+offset_left = 78.0
+offset_top = 28.0
+offset_right = 614.0
+offset_bottom = 52.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/VBoxContainer"]
-margin_top = 56.0
-margin_right = 614.0
-margin_bottom = 76.0
+offset_top = 56.0
+offset_right = 614.0
+offset_bottom = 76.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer/CenterContainer"]
-margin_left = 250.0
-margin_right = 364.0
-margin_bottom = 20.0
+offset_left = 250.0
+offset_right = 364.0
+offset_bottom = 20.0
 
 [node name="Button_Login" type="Button" parent="CanvasLayer/VBoxContainer/CenterContainer/HBoxContainer"]
-margin_right = 46.0
-margin_bottom = 20.0
+offset_right = 46.0
+offset_bottom = 20.0
 text = "Login"
 
 [node name="Button_Register" type="Button" parent="CanvasLayer/VBoxContainer/CenterContainer/HBoxContainer"]
-margin_left = 50.0
-margin_right = 114.0
-margin_bottom = 20.0
+offset_left = 50.0
+offset_right = 114.0
+offset_bottom = 20.0
 text = "Register"
