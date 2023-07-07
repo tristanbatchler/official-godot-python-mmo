@@ -1,9 +1,9 @@
 extends "res://model.gd"
 
-onready var body: KinematicBody2D = get_node("KinematicBody2D")
-onready var label: Label = get_node("KinematicBody2D/Label")
-onready var sprite: Sprite = get_node("KinematicBody2D/Avatar")
-onready var animation_player: AnimationPlayer = get_node("KinematicBody2D/Avatar/AnimationPlayer")
+@onready var body: CharacterBody2D = get_node("CharacterBody2D")
+@onready var label: Label = get_node("CharacterBody2D/Label")
+@onready var sprite: Sprite2D = get_node("CharacterBody2D/Avatar")
+@onready var animation_player: AnimationPlayer = get_node("CharacterBody2D/Avatar/AnimationPlayer")
 
 var server_position: Vector2
 var initialised_position: bool = false
@@ -21,7 +21,7 @@ func _ready():
 	update(initial_data)
 
 func update(new_model: Dictionary):
-	.update(new_model)
+	super.update(new_model)
 	
 	# Set the correct sprite for the actor's avatar ID
 	if new_model.has("avatar_id"):
@@ -60,7 +60,9 @@ func _physics_process(delta):
 		
 	velocity = (target - body.position).normalized() * speed
 	if (target - body.position).length() > 5:
-		velocity = body.move_and_slide(velocity)
+		body.set_velocity(velocity)
+		body.move_and_slide()
+		velocity = body.velocity
 	else:
 		velocity = Vector2.ZERO
 

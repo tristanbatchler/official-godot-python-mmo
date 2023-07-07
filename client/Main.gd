@@ -6,26 +6,21 @@ const Packet = preload("res://packet.gd")
 const Chatbox = preload("res://Chatbox.tscn")
 const Actor = preload("res://Actor.tscn")
 
-onready var _network_client = NetworkClient.new()
-onready var _login_screen = get_node("Login")
+@onready var _network_client = NetworkClient.new()
+@onready var _login_screen = get_node("Login")
 var _chatbox = null
-var state: FuncRef
+var state: Callable
 var _username: String
 var _actors: Dictionary = {}
 var _player_actor = null
 
 
 func _ready():
-	_network_client.connect("connected", self, "_handle_client_connected")
-	_network_client.connect("disconnected", self, "_handle_client_disconnected")
-	_network_client.connect("error", self, "_handle_network_error")
-	_network_client.connect("data", self, "_handle_network_data")
 	add_child(_network_client)
-	_network_client.connect_to_server("godmmo.tx2600.net", 8081)
-	
-	_login_screen.connect("login", self, "_handle_login_button")
-	_login_screen.connect("register", self, "_handle_register_button")
-	state = null
+	_network_client.data.connect(_handle_network_data)
+	_login_screen.login.connect(_handle_login_button)
+	_login_screen.register.connect(_handle_register_button)
+	# state = null
 
 func LOGIN(p):
 	match p.action:
@@ -62,13 +57,13 @@ func PLAY(p):
 			
 	
 func _handle_login_button(username: String, password: String):
-	state = funcref(self, "LOGIN")
+	state = Callable(self, "LOGIN")
 	var p: Packet = Packet.new("Login", [username, password])
 	_network_client.send_packet(p)
 	_username = username
 
 func _handle_register_button(username: String, password: String, avatar_id: int):
-	state = funcref(self, "REGISTER")
+	state = Callable(self, "REGISTER")
 	var p: Packet = Packet.new("Register", [username, password, avatar_id])
 	_network_client.send_packet(p)
 	
@@ -79,11 +74,11 @@ func _update_models(model_data: Dictionary):
 	`_update_x(model_id: int, model_data: Dictionary)` where `x` is the name 
 	of a model (e.g. `_update_actor`).
 	"""
-	print("Received model data: %s" % JSON.print(model_data))
+	print("Received model data: %s" % JSON.stringify(model_data))
 	var model_id: int = model_data["id"]
 	var func_name: String = "_update_" + model_data["model_type"].to_lower()
-	var f: FuncRef = funcref(self, func_name)
-	f.call_func(model_id, model_data)
+	var f: Callable = Callable(self, func_name)
+	f.call(model_id, model_data)
 
 func _update_actor(model_id: int, model_data: Dictionary):
 	# If this is an existing actor, just update them
@@ -95,24 +90,24 @@ func _update_actor(model_id: int, model_data: Dictionary):
 		var new_actor
 		
 		if not _player_actor: 
-			_player_actor = Actor.instance().init(model_data)
+			_player_actor = Actor.instantiate().init(model_data)
 			_player_actor.is_player = true
 			new_actor = _player_actor
 		else:
-			new_actor = Actor.instance().init(model_data)
+			new_actor = Actor.instantiate().init(model_data)
 		
 		_actors[model_id] = new_actor
 		add_child(new_actor)
 
 func _enter_game():
-	state = funcref(self, "PLAY")
+	state = Callable(self, "PLAY")
 
 	# Remove the login screen
 	remove_child(_login_screen)
 
 	# Instance the chatbox
-	_chatbox = Chatbox.instance()
-	_chatbox.connect("message_sent", self, "send_chat")
+	_chatbox = Chatbox.instantiate()
+	_chatbox.connect("message_sent", Callable(self, "send_chat"))
 	add_child(_chatbox)
 	
 func send_chat(text: String):
@@ -134,7 +129,7 @@ func _handle_network_data(data: String):
 	var action_payloads: Array = Packet.json_to_action_payloads(data)
 	var p: Packet = Packet.new(action_payloads[0], action_payloads[1])
 	# Pass the packet to our current state
-	state.call_func(p)
+	state.call(p)
 
 
 func _handle_network_error():

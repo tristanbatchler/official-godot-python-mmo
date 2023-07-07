@@ -1,0 +1,17 @@
+2a60927148abd1d33b818b535e306557
+::res://::1680484196
+Actor.gd::GDScript::-1::1680442243::0::1::::<>Node<>::
+Actor.tscn::PackedScene::-1::1680442243::0::1::::<><>::res://Avatar.tscn<>res://Actor.gd
+Avatar.tscn::PackedScene::-1::1680442243::0::1::::<><>::res://tilemap_packed.png
+Chatbox.gd::GDScript::-1::1680442243::0::1::::<>Control<>::
+Chatbox.tscn::PackedScene::254047248465899249::1680484189::0::1::::<><>::res://Chatbox.gd
+default_env.tres::Environment::747018611671834139::1680484190::0::1::::<><>::
+icon.png::CompressedTexture2D::7231802407736120124::1680192856::1680442251::1::::<><>::
+Login.gd::GDScript::-1::1680442243::0::1::::<>Control<>::
+Login.tscn::PackedScene::-1::1680442243::0::1::::<><>::res://Login.gd<>res://Avatar.tscn
+Main.gd::GDScript::-1::1680483842::0::1::::<>Node<>::
+Main.tscn::PackedScene::6190966006523535352::1680484190::0::1::::<><>::res://Main.gd<>res://Login.tscn<>uid://btch3w3yq11gy
+model.gd::GDScript::-1::1680442243::0::1::::<>Node<>::
+packet.gd::GDScript::-1::1680480641::0::1::::<>Object<>::
+tilemap_packed.png::CompressedTexture2D::3724613689383648796::1680192856::1680442251::1::::<><>::
+websockets_client.gd::GDScript::-1::1680484002::0::1::::<>Node<>::
